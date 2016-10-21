@@ -1,13 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
-void printBuffer(char *buffer, int length){
-  for(int i = 0; i < length; i++){
-    printf("%c",buffer[i]);
-  }
-  printf("\n");
-}
+#include "reader.h"
 
 char* readLine(FILE* fp){
   char *buffer;
@@ -75,17 +69,4 @@ char** splitString(char* string, char *splitter){
   }
   segments[segmentIndex] = NULL; //end array with null reference for your looping convinience and pleasure
   return segments;
-}
-
-int main(int argc, char** argv){
-  char *str = "a:b:c:d:e";
-  char *str2 = malloc(sizeof(char) * (strlen(str) + 1));
-  strcpy(str2, str);
-  char **strings = splitString(str2, ":");
-  int i = 0;
-  while(strings[i] != NULL){
-    printf("%s\n", strings[i]);
-    i++;
-  }
-  return 0;
 }
