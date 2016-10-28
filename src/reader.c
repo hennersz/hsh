@@ -1,48 +1,62 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "reader.h"
+
+int countLines(FILE *fp){
+  int count = 0;
+  char c;
+  while((c = fgetc(fp))!=EOF){
+    if(c == '\n'){
+      count++;
+    }
+  }
+  rewind(fp);
+  return count;
+}
+
+int lineLength(FILE *fp){
+  char c = '\0';
+  int length = 0;
+  c=fgetc(fp);
+
+  while(c != '\n' && c != EOF){
+    c=fgetc(fp);
+    length++;
+  }
+  rewind(fp);
+  return length;
+}
 
 char* readLine(FILE* fp){
   char *buffer;
-  int bufferLength = 100;
+  int bufferLength = lineLength(fp) + 1;
   int bufferIndex = 0;
-  buffer = malloc(sizeof(char) * bufferLength);
-  memset(buffer, '\0', sizeof(char) * bufferLength); //initialise to nulls
+  buffer = malloc(sizeof(char) * bufferLength );
   char c = '\0';
   
   while(c != '\n' && c != EOF){
     c = fgetc(fp);
     buffer[bufferIndex] = c;
     bufferIndex++;
-    if(bufferIndex == bufferLength - 1){ //double buffer size if input is too large
-      bufferLength *= 2;
-      buffer = realloc(buffer, sizeof(char) * bufferLength);
-    }
   }
   buffer[bufferIndex] = '\0';//terminate string with null
 
   return buffer; 
 }
 
-char** readLines(const char* file){
-  FILE * fp;
-  fp = fopen (file, "r");
+char** readLines(FILE *fp){
   char **lines;
-  int linesLength = 2;
+  int linesLength = countLines(fp) + 1;
   lines = malloc(sizeof(char *) * linesLength);
   int linesIndex = 0;
   char* line;
-  int i = 0;
   while(!feof(fp)){ //check for end of file
     line = readLine(fp);   
     lines[linesIndex] = malloc((strlen(line) + 1) * sizeof(char));
     strcpy(lines[linesIndex], line);
     linesIndex++;
-    if(linesIndex == linesLength-1){
-      linesLength *= 2;
-      lines = realloc(lines, sizeof(char *) * linesLength);
-    }
   }
   lines[linesIndex] = NULL; //end array with null reference for your looping convinience and pleasure
   return lines;

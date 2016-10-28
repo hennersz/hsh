@@ -1,15 +1,19 @@
 CC=clang
-CFLAGS=-g -O0 -Wall
+CFLAGS=-g -O0 -Wall -c
+LDFLAGS=
+SOURCEDIR=src/
+OUTDIR=bin
+SOURCES=$(wildcard $(SOURCEDIR)*.c)
+OBJECTS=$(patsubst $(SOURCEDIR)%.c,$(OUTDIR)/%.o,$(SOURCES))
+EXECUTABLE=hsh
 
-SOURCEDIR = src/
-OUTDIR = bin/
-TARGET = hsh
-RM = rm -r
+all: $(OUTDIR)/$(EXECUTABLE)
 
-all: $(TARGET)
+$(OUTDIR)/$(EXECUTABLE): $(OBJECTS)
+	    $(CC) $^ -o $@
 
-$(TARGET): $(SOURCEDIR)$(TARGET).c
-	$(CC) $(CFLAGS) -o $(OUTDIR)$(TARGET) $(SOURCEDIR)$(TARGET).c
+$(OBJECTS): $(OUTDIR)/%.o : $(SOURCEDIR)%.c
+	    $(CC) $(CFLAGS) $< -o $@
 
 clean:
-	$(RM) $(OUTDIR)*
+	    rm -f $(OUTDIR)/*o $(OUTDIR)/$(EXECUTABLE)
