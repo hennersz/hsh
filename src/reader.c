@@ -56,6 +56,7 @@ char** readLines(FILE *fp){
     line = readLine(fp);   
     lines[linesIndex] = malloc((strlen(line) + 1) * sizeof(char));
     strcpy(lines[linesIndex], line);
+    free(line);
     linesIndex++;
   }
   lines[linesIndex] = NULL; //end array with null reference for your looping convinience and pleasure
