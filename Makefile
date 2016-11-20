@@ -1,5 +1,5 @@
 CC=clang
-CFLAGS=-g -O0 -Wall -c
+CFLAGS=-g -O0 -Wall -c -v
 LDFLAGS=
 SOURCEDIR=src/
 OUTDIR=bin

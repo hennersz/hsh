@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <dirent.h>
 #include "reader.h"
 
 int countLines(FILE *fp){
@@ -17,6 +18,8 @@ int countLines(FILE *fp){
 }
 
 int lineLength(FILE *fp){
+  fpos_t pos;
+  fgetpos(fp, &pos);
   char c = '\0';
   int length = 0;
   c=fgetc(fp);
@@ -25,7 +28,7 @@ int lineLength(FILE *fp){
     c=fgetc(fp);
     length++;
   }
-  rewind(fp);
+  fsetpos(fp, &pos);
   return length;
 }
 
@@ -35,11 +38,11 @@ char* readLine(FILE* fp){
   int bufferIndex = 0;
   buffer = malloc(sizeof(char) * bufferLength );
   char c = '\0';
-  
+  c = fgetc(fp);
   while(c != '\n' && c != EOF){
-    c = fgetc(fp);
-    buffer[bufferIndex] = c;
+    buffer[bufferIndex]= c;
     bufferIndex++;
+    c = fgetc(fp);
   }
   buffer[bufferIndex] = '\0';//terminate string with null
 
@@ -49,14 +52,12 @@ char* readLine(FILE* fp){
 char** readLines(FILE *fp){
   char **lines;
   int linesLength = countLines(fp) + 1;
-  lines = malloc(sizeof(char *) * linesLength);
+  lines =malloc(sizeof(char *) * linesLength);
   int linesIndex = 0;
-  char* line;
-  while(!feof(fp)){ //check for end of file
-    line = readLine(fp);   
-    lines[linesIndex] = malloc((strlen(line) + 1) * sizeof(char));
-    strcpy(lines[linesIndex], line);
-    free(line);
+  char *line = readLine(fp);
+  while(strcmp(line, "\0")){ //check for end of file
+    lines[linesIndex] = line;
+    line = readLine(fp);
     linesIndex++;
   }
   lines[linesIndex] = NULL; //end array with null reference for your looping convinience and pleasure
@@ -65,8 +66,14 @@ char** readLines(FILE *fp){
 
 char** splitString(char* string, char *splitter){
   char **segments;
-  int noOfSegments = 2;
   int segmentIndex = 0;
+  int count = 0;
+  for(int i = 0; i < strlen(string); i++){
+    if(string[i] == splitter[0]){
+      count++;
+    }
+  }
+  int noOfSegments = count + 2;
   segments = malloc(sizeof(char *) * noOfSegments);
   char *segment;
   segment = strtok(string, splitter);
@@ -75,13 +82,27 @@ char** splitString(char* string, char *splitter){
     segments[segmentIndex] = malloc(sizeof(char) * (strlen(segment) + 1));
     strcpy(segments[segmentIndex], segment);
     segmentIndex++;
-    if(segmentIndex == noOfSegments - 1){
-      noOfSegments *= 2;
-      segments = realloc(segments, sizeof(char *) * noOfSegments);
-    }
-
     segment = strtok(NULL, splitter);
   }
   segments[segmentIndex] = NULL; //end array with null reference for your looping convinience and pleasure
   return segments;
+}
+
+int lookupBinary(char *directory, char *binary){
+  DIR *dirp;
+  struct dirent *dp;
+  
+  if((dirp = opendir(directory)) == NULL){
+    return 1;
+  }
+  
+  while((dp = readdir(dirp)) != NULL){
+    if(strcmp(dp->d_name, binary) == 0){
+      closedir(dirp);
+      return 0;
+    }
+  }
+  
+  closedir(dirp);
+  return 2;
 }

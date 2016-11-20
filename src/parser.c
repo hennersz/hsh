@@ -16,7 +16,6 @@ regmatch_t match(char *regexString, char *string){
 
   regmatch_t matches[MAX_MATCHES];
   if(regexec(&regex, string, MAX_MATCHES, matches, 0) == 0) {
-    
     return matches[0];
   } else {
     return errorStruct;
@@ -24,7 +23,7 @@ regmatch_t match(char *regexString, char *string){
 }
 
 variableStruct parseLine(char *line){
-  char *variableRegex = "\\$[^\\$=]+=";
+  char *variableRegex = "[A-Z]+=";
   variableStruct result;
   regmatch_t varName = match(variableRegex, line);
   if(varName.rm_so == varName.rm_eo){
@@ -35,9 +34,9 @@ variableStruct parseLine(char *line){
     result.variableName = malloc(sizeof(char) * (varNameLen));
     strncpy(result.variableName, line, varNameLen - 1);
     result.variableName[varNameLen] = '\0';
-    int valueLen = strlen(&line[varNameLen + 1]);
+    int valueLen = strlen(&line[varNameLen ]);
     result.variableValue = malloc(sizeof(char) * (valueLen + 1));
-    strncpy(result.variableValue, &line[varNameLen + 1], valueLen);
+    strncpy(result.variableValue, &line[varNameLen], valueLen);
     result.variableValue[valueLen] = '\0';
     result.errno = 0;
     return result;

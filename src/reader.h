@@ -7,3 +7,4 @@ int lineLength(FILE *fp);
 char* readLine(FILE* fp);
 char** readLines(FILE *fp);
 char** splitString(char* string, char *splitter);
+int lookupBinary(char *directory, char *binary);
