@@ -3,6 +3,7 @@
 #include <string.h>
 #include "linkedList.h"
 #include "command.h"
+#include "reader.h"
 
 int execSubprocess(char *argv[]){
   pid_t pid = vfork();
@@ -42,6 +43,27 @@ char *getBin(char *binWithPath){
 char *searchForBinary(List *paths, char *binary){
   if(strstr(binary, "/") == NULL){//check if there is a / in the name
     Node *currentNode = paths->head;
+    while(currentNode != NULL){
+      if(lookupBinary(currentNode->path, binary) == 0){
+        char *returnValue = malloc(sizeof(char) * (strlen(currentNode->path) + strlen(binary) + 2));
+        strcpy(returnValue, currentNode->path);
+        strcat(returnValue, "/");
+        strcat(returnValue, binary);
+        return returnValue;
+      }
+      currentNode = currentNode->next;
+    }
+    printf("Error: command not found: %s\n", binary);
+  } else {
+    char *path = getPath(binary);
+    char *bin = getBin(binary);
+    if(lookupBinary(path, bin) == 0){
+      free(path);
+      free(bin);
+      return binary;
+    } else {
+      printf("Error: no such file or directory: %s\n", binary);
+    }
   }
   return NULL;
 }
