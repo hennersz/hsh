@@ -1,9 +1,4 @@
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include "linkedList.h"
 #include "command.h"
-#include "reader.h"
 
 int execSubprocess(char *argv[]){
   pid_t pid = vfork();
@@ -62,8 +57,33 @@ char *searchForBinary(List *paths, char *binary){
       free(bin);
       return binary;
     } else {
+      free(path);
+      free(bin);
       printf("Error: no such file or directory: %s\n", binary);
     }
   }
+
   return NULL;
+}
+
+void executeCommand(char *command, List *paths, nlist *variables[HASHSIZE]){
+  char **args = splitString(command, " ");
+  if(strcmp(args[0], "cd") == 0){
+    if(args[1] == NULL){
+      chdir(lookup("HOME", variables)->value);
+    } else{
+      if(chdir(args[1]) == -1){
+        perror("Error ");
+      }
+    }
+  } else {
+    char *binary = searchForBinary(paths, args[0]);
+    if(binary == NULL){
+      return;
+    } else {
+      args[0] = binary;
+      execSubprocess(args);
+    }
+  }
+
 }

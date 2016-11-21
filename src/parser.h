@@ -3,7 +3,7 @@
 typedef struct variableStruct {
   char *variableName;
   char *variableValue;
-  int errno;
+  int errnum;
 } variableStruct;
 
 #define MAX_MATCHES 1

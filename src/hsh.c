@@ -1,9 +1,8 @@
 #include "reader.h"
-#include "hashTable.h"
 #include "parser.h"
-#include "linkedList.h"
 #include "command.h"
 #include  <unistd.h>
+#include <errno.h>
 
 int arrayLength(char **array){
   int count = 0;
@@ -61,41 +60,27 @@ int main(int argc, char **argv){
   nlist *variableTable[HASHSIZE];
   for(int i = 0; i < len; i++){
     variableStruct res = parseLine(lines[i]);
-    if(res.errno == 1){
+    if(res.errnum == 1){
       printf("Error parsing profile at line %i\n", i + 1);
     } else {
       install(res.variableName, res.variableValue, variableTable);
     }
   }
+  
+  List *pathList = createPathList(variableTable);
+  chdir(lookup("HOME", variableTable)->value);
 
-  printf("%s\n", getBin("/user/bin/ls"));
-  /* List *pathList = createPathList(variableTable); */
-  /* chdir(lookup("HOME", variableTable)->value); */
-  /* char *currentDirectory = lookup("HOME", variableTable)->value; */
-
-  /* while(1){ */
-  /*   char *cwd = getcwd(NULL, 0); */
-  /*   printf("\n%s:\n$ ", cwd); */ 
-  /*   free(cwd); */
-  /*   char userInput[1024]; */
-  /*   scanf("%[^\n]", userInput); */
-  /*   int ch; */
-  /*   while ((ch=getchar()) != EOF && ch != '\n') */
-  /*         ; */
-  /*   char **args = splitString(userInput, " "); */
-  /*   char *binary = binPath(pathList, args[0], currentDirectory); */
-  /*   args[0] = binary; */
-  /*   pid_t pid = vfork(); */
-
-  /*   if(pid == -1){ */
-  /*     printf("Faliure\n"); */
-  /*   } else if(pid > 0){ */
-  /*     waitpid(-1, NULL, 0); */
-  /*   } else { */
-  /*     execv(args[0], args); */
-  /*     exit(0); */
-  /*   } */
-  /* } */
+  while(1){
+    char *cwd = getcwd(NULL, 0);
+    printf("\n%s:\n$ ", cwd); 
+    free(cwd);
+    char userInput[1024];
+    scanf("%[^\n]", userInput);
+    int ch;
+    while ((ch=getchar()) != EOF && ch != '\n')
+          ;
+    executeCommand(userInput, pathList, variableTable);
+  }
 
   return 0;
 }

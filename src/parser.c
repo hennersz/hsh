@@ -27,18 +27,19 @@ variableStruct parseLine(char *line){
   variableStruct result;
   regmatch_t varName = match(variableRegex, line);
   if(varName.rm_so == varName.rm_eo){
-    result.errno = 1;
+    result.errnum = 1;
     return result;
   } else {
     int varNameLen = varName.rm_eo - varName.rm_so;
     result.variableName = malloc(sizeof(char) * (varNameLen));
     strncpy(result.variableName, line, varNameLen - 1);
     result.variableName[varNameLen] = '\0';
+    
     int valueLen = strlen(&line[varNameLen ]);
     result.variableValue = malloc(sizeof(char) * (valueLen + 1));
     strncpy(result.variableValue, &line[varNameLen], valueLen);
     result.variableValue[valueLen] = '\0';
-    result.errno = 0;
+    result.errnum = 0;
     return result;
   } 
 }
