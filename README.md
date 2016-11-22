@@ -19,6 +19,10 @@
 ```
 The MVP shell
 
+## Make
+Build with `make`
+Delete build files with `make clean`
+
 ## Files
 
 All source files are contained within /src
