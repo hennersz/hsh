@@ -1,4 +1,4 @@
-#include "hashtable.h"
+#include "hashTable.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -24,7 +24,6 @@ nlist *lookup(char *s, nlist *hashTab[HASHSIZE]){
    * Looks for the entry in the hash table given a key, Returns the node if found or NULL if not
    */
   nlist *np;
-
   for(np = hashTab[hash(s)]; np!=NULL; np = np->next){
     if(strcmp(s, np->key) == 0){
       return np;
@@ -40,9 +39,9 @@ nlist* install(char *key, char *value, nlist *hashTab[HASHSIZE]){
    */
   nlist *np;
   unsigned hashVal;
-
+   
   if((np = lookup(key, hashTab)) == NULL){
-    np = malloc(sizeof(*np));
+    np = calloc(sizeof(nlist), 1);
     if(np == NULL || (np->key = strdup(key)) == NULL)
       return NULL;
     hashVal = hash(key);
@@ -51,8 +50,9 @@ nlist* install(char *key, char *value, nlist *hashTab[HASHSIZE]){
   } else {
     free(np->value);
   }
-  if((np->value = strdup(value)) == NULL)
+  if((np->value = strdup(value)) == NULL){
     return NULL;
+  }
   return np;
 }
 

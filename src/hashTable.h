@@ -1,4 +1,4 @@
-#define HASHSIZE 263//Prime to reduce chance of collision???
+#define HASHSIZE 50//Prime to reduce chance of collision???
 
 typedef struct nlist { /* table entry: */
   /**

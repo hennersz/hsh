@@ -1,2 +1,2 @@
-HOME=/users/henrymortimer
-PATH=/bin:/usr/bin
+HOME=/
+PATH=/bin

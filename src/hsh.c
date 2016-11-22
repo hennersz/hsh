@@ -137,7 +137,7 @@ void importProfile(nlist *variables[HASHSIZE]){
   for(i = 0; i < len; i++){
     variableStruct res = parseLine(lines[i]);
     if(res.errnum == 1){
-      printf("Error parsing profile at line %i\n", i + 1);
+      printf("Error parsing profile at line %d\n", i + 1);
     } else {
       install(res.variableName, res.variableValue, variables);
       free(lines[i]);
@@ -148,24 +148,28 @@ void importProfile(nlist *variables[HASHSIZE]){
 
 
 int main(int argc, char **argv){
-  nlist *variableTable[HASHSIZE];
+  nlist *variableTable[HASHSIZE]={NULL};
   importProfile(variableTable);
+
   checkForMissingVariable("HOME", variableTable);
   checkForMissingVariable("PATH", variableTable);
 
   List *pathList = createPathList(variableTable);
+
   chdir(lookup("HOME", variableTable)->value);
 
-  char *currentPath = lookup("PATH", variableTable)->value;
-  char *oldPath = lookup("PATH", variableTable)->value;
+  char *currentPath = strdup(lookup("PATH", variableTable)->value);
+  char *oldPath = strdup(lookup("PATH", variableTable)->value);
 
   while(1){
-    currentPath = lookup("PATH", variableTable)->value;
+    free(currentPath);
+    currentPath = strdup(lookup("PATH", variableTable)->value);
     if(strcmp(currentPath, oldPath) != 0){//path has changed
       freeList(pathList);
       pathList = createPathList(variableTable);
     }
-    oldPath = currentPath;
+    free(oldPath);
+    oldPath = strdup(lookup("PATH", variableTable)->value);
     char *cwd = getcwd(NULL, 0);
     printf("\n%s:\n$ ", cwd); 
     free(cwd);

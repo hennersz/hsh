@@ -40,13 +40,13 @@ variableStruct parseLine(char *line){
   } else {
     // get everything before the =
     int varNameLen = varName.rm_eo - varName.rm_so;
-    result.variableName = malloc(sizeof(char) * (varNameLen));
+    result.variableName = calloc(sizeof(char) , (varNameLen));
     strncpy(result.variableName, line, varNameLen - 1);
     result.variableName[varNameLen] = '\0';
     
     //get everything after the =
     int valueLen = strlen(&line[varNameLen ]);
-    result.variableValue = malloc(sizeof(char) * (valueLen + 1));
+    result.variableValue = calloc(sizeof(char) , (valueLen + 1));
     strncpy(result.variableValue, &line[varNameLen], valueLen);
     result.variableValue[valueLen] = '\0';
     result.errnum = 0;

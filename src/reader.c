@@ -83,7 +83,8 @@ char** splitString(char* string, char *splitter){
   char **segments;
   int segmentIndex = 0;
   int count = 0;
-  for(int i = 0; i < strlen(string); i++){
+  int i;
+  for(i = 0; i < strlen(string); i++){
     if(string[i] == splitter[0]){
       count++;
     }
