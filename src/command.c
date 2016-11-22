@@ -40,7 +40,7 @@ char *searchForBinary(List *paths, char *binary){
     Node *currentNode = paths->head;
     while(currentNode != NULL){
       if(lookupBinary(currentNode->path, binary) == 0){
-        char *returnValue = malloc(sizeof(char) * (strlen(currentNode->path) + strlen(binary) + 2));
+        char *returnValue = malloc(sizeof(char) * (strlen(currentNode->path) + strlen(binary) + 2)); //include space for extra slash and null char
         strcpy(returnValue, currentNode->path);
         strcat(returnValue, "/");
         strcat(returnValue, binary);
@@ -66,6 +66,30 @@ char *searchForBinary(List *paths, char *binary){
   return NULL;
 }
 
+int isAssignment(char *command){
+  char *variableRegex = "\\$[A-Z]+=";
+  regmatch_t res = match(variableRegex, command);
+  return !(res.rm_so == res.rm_eo);
+}
+
+void assignVariable(char *assignment, nlist *variables[HASHSIZE]){
+  char *variableRegex = "\\$[A-Z]+=";
+  regmatch_t varName = match(variableRegex, assignment);
+  int varNameLen = varName.rm_eo - varName.rm_so - 2; //dont include = or $ in length 
+
+  char *variableName = malloc(sizeof(char) * (varNameLen));
+  strncpy(variableName, (assignment + 1), varNameLen);
+  variableName[varNameLen] = '\0';
+  //$HOME=/users/henrymortimer
+
+  char *variableValue = malloc(sizeof(char) * (strlen((assignment + varNameLen + 2)) + 1));
+  strcpy(variableValue, (assignment + varNameLen + 2));
+
+  install(variableName, variableValue, variables);
+  free(variableName);
+  free(variableValue);
+}
+
 void executeCommand(char *command, List *paths, nlist *variables[HASHSIZE]){
   char **args = splitString(command, " ");
   if(strcmp(args[0], "cd") == 0){
@@ -76,6 +100,8 @@ void executeCommand(char *command, List *paths, nlist *variables[HASHSIZE]){
         perror("Error ");
       }
     }
+  } else if(isAssignment(args[0])) {
+    assignVariable(args[0], variables);
   } else {
     char *binary = searchForBinary(paths, args[0]);
     if(binary == NULL){
