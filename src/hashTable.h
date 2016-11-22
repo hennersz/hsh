@@ -1,9 +1,12 @@
-#define HASHSIZE 256
+#define HASHSIZE 263//Prime to reduce chance of collision???
 
 typedef struct nlist { /* table entry: */
-    struct nlist *next; /* next entry in chain */
-    char *key; //variable name
-    char *value; //variable value
+  /**
+   * This hash table will create a linked list of values if there are collisions
+   */
+  struct nlist *next; /* next entry in chain */
+  char *key; //variable name
+  char *value; //variable value
 } nlist;
 
 unsigned hash(char *s);

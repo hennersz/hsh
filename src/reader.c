@@ -6,6 +6,9 @@
 #include "reader.h"
 
 int countLines(FILE *fp){
+  /**
+   * Counts the number of lines in a file
+   */
   int count = 0;
   char c;
   while((c = fgetc(fp))!=EOF){
@@ -18,7 +21,10 @@ int countLines(FILE *fp){
 }
 
 int lineLength(FILE *fp){
-  fpos_t pos;
+  /**
+   * Counts the length of the current line in file
+   */
+  fpos_t pos;//save current position
   fgetpos(fp, &pos);
   char c = '\0';
   int length = 0;
@@ -28,11 +34,14 @@ int lineLength(FILE *fp){
     c=fgetc(fp);
     length++;
   }
-  fsetpos(fp, &pos);
+  fsetpos(fp, &pos);//move file pointer back to where is was in the file at beggining 
   return length;
 }
 
 char* readLine(FILE* fp){
+  /**
+   * Reads one line from a file and allocates the exact amount of memory for it
+   */
   char *buffer;
   int bufferLength = lineLength(fp) + 1;
   int bufferIndex = 0;
@@ -50,6 +59,9 @@ char* readLine(FILE* fp){
 }
 
 char** readLines(FILE *fp){
+  /**
+   * Reads all the lines in a file into an array of strings terminated by a NULL reference
+   */
   char **lines;
   int linesLength = countLines(fp) + 1;
   lines =malloc(sizeof(char *) * linesLength);
@@ -65,6 +77,9 @@ char** readLines(FILE *fp){
 }
 
 char** splitString(char* string, char *splitter){
+  /**
+   * Splits a string into an array of strings by some string of characters
+   */
   char **segments;
   int segmentIndex = 0;
   int count = 0;
@@ -89,6 +104,9 @@ char** splitString(char* string, char *splitter){
 }
 
 int lookupBinary(char *directory, char *binary){
+  /**
+   * Checks a directory to see if a binary exists in it
+   */
   DIR *dirp;
   struct dirent *dp;
   

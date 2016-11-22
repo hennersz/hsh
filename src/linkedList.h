@@ -12,3 +12,4 @@ typedef struct List{
 
 Node* pushNode(char *path, List *list);
 List *createList();
+void freeList(List *list);
